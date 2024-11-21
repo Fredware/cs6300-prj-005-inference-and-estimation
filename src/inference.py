@@ -13,6 +13,7 @@
 
 
 import game
+import random
 
 from util import raiseNotDefined
 
@@ -72,7 +73,11 @@ class DiscreteDistribution(dict):
         {}
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        norm_factor = self.total()
+        dict_contents = list(self.items())
+        if dict_contents and norm_factor:
+            for key, value in self.items():
+                self[key] = value / norm_factor
 
     def sample(self):
         """
@@ -96,7 +101,18 @@ class DiscreteDistribution(dict):
         0.0
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        self.normalize()
+        random_val = random.random()
+        value_prev = 0
+        cum_vals = []
+        cum_keys = []
+        for index, (key, value) in enumerate(self.items()):
+            cum_vals.append(value + value_prev)
+            cum_keys.append(key)
+            value_prev = cum_vals[index]
+        for index, value in enumerate(cum_vals):
+            if random_val < value:
+                return cum_keys[index]
 
 
 class InferenceModule:
