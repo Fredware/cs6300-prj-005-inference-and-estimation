@@ -11,11 +11,12 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
+import busters
 import game
 import random
 
 from util import raiseNotDefined
+from util import manhattanDistance
 
 
 class DiscreteDistribution(dict):
@@ -182,7 +183,20 @@ class InferenceModule:
         Return the probability P(noisyDistance | pacmanPosition, ghostPosition).
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        if noisyDistance is not None:
+            ghost_not_in_jail = manhattanDistance(ghostPosition, jailPosition)
+            if ghost_not_in_jail:
+                true_distance = manhattanDistance(pacmanPosition, ghostPosition)
+                prob_dist_given_pos = busters.getObservationProbability(noisyDistance, true_distance)
+            else:
+                prob_dist_given_pos = 0.0
+        else:
+            ghost_not_in_jail = manhattanDistance(ghostPosition, jailPosition)
+            if ghost_not_in_jail:
+                prob_dist_given_pos = 0.0
+            else:
+                prob_dist_given_pos = 1.0
+        return prob_dist_given_pos
 
     def setGhostPosition(self, gameState, ghostPosition, index):
         """

@@ -37,10 +37,10 @@
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
 
 import testClasses
-from src import busters, layout, bustersAgents
-from src.game import Agent
-from src.game import Actions
-from src.game import Directions
+from ghostbusters import busters, layout, bustersAgents
+from ghostbusters.game import Agent
+from ghostbusters.game import Actions
+from ghostbusters.game import Directions
 import random
 import time
 import util

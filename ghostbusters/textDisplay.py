@@ -14,7 +14,7 @@
 
 import time
 try: 
-    from src import pacman
+    from ghostbusters import pacman
 except:
     pass
 
