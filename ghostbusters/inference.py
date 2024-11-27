@@ -11,12 +11,13 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
+
+import itertools
+import random
 import busters
 import game
-import random
 
-from util import raiseNotDefined
-from util import manhattanDistance
+from util import manhattanDistance, raiseNotDefined
 
 
 class DiscreteDistribution(dict):
@@ -115,7 +116,6 @@ class DiscreteDistribution(dict):
             if random_val < value:
                 return cum_keys[index]
 
-
 class InferenceModule:
     """
     An inference module tracks a belief distribution over a ghost's location.
@@ -149,7 +149,7 @@ class InferenceModule:
             dist[jail] = 1.0
             return dist
         pacmanSuccessorStates = game.Actions.getLegalNeighbors(pacmanPosition, \
-                                                               gameState.getWalls())  # Positions Pacman can move to
+                gameState.getWalls())  # Positions Pacman can move to
         if ghostPosition in pacmanSuccessorStates:  # Ghost could get caught
             mult = 1.0 / float(len(pacmanSuccessorStates))
             dist[jail] = mult
@@ -304,8 +304,12 @@ class ExactInference(InferenceModule):
         position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-
+        # Posterior = NORMALIZE(likelihood*prior)
+        pacman_position = gameState.getPacmanPosition()
+        jail_position = self.getJailPosition()
+        for ghost_position in self.allPositions:
+            likelihood = self.getObservationProb(observation, pacman_position, ghost_position, jail_position)
+            self.beliefs[ghost_position] = likelihood * self.beliefs[ghost_position]
         self.beliefs.normalize()
 
     def elapseTime(self, gameState):
