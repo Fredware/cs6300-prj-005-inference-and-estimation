@@ -361,7 +361,16 @@ class ParticleFilter(InferenceModule):
         """
         self.particles = []
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        legal_positions = self.legalPositions
+        particle_list = []
+        # The python docs are confusing, but choice should uniformly return elements of a sequence
+        # particle_list.extend(random.choices(legal_positions, k=self.numParticles))
+
+        samples_per_position = self.numParticles // len(legal_positions)
+        for pos in legal_positions:
+            particle_list.extend([pos] * samples_per_position)
+
+        self.particles = particle_list
 
     def observeUpdate(self, observation, gameState):
         """
@@ -395,8 +404,15 @@ class ParticleFilter(InferenceModule):
         This function should return a normalized distribution.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-
+        distribution_dict = dict()
+        for particle in self.particles:
+            if particle in distribution_dict:
+                distribution_dict[particle] += 1
+            else:
+                distribution_dict[particle] = 1
+        discrete_distribution = DiscreteDistribution(distribution_dict)
+        discrete_distribution.normalize()
+        return discrete_distribution
 
 class JointParticleFilter(ParticleFilter):
     """
