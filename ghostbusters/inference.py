@@ -322,7 +322,19 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        next_pos_posterior = dict()
+        for pos in self.allPositions:
+            next_pos_likelihood = self.getPositionDistribution(gameState, pos)
+            for next_pos in self.allPositions:
+                temp_posterior = next_pos_likelihood[next_pos] * self.beliefs[pos]
+                if next_pos not in next_pos_posterior:
+                    next_pos_posterior[next_pos] = temp_posterior
+                else:
+                    next_pos_posterior[next_pos] += temp_posterior
+
+        for pos in self.allPositions:
+            self.beliefs[pos] = next_pos_posterior[pos]
+        # self.beliefs.normalize()  # Maybe not needed?
 
     def getBeliefDistribution(self):
         return self.beliefs
