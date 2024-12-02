@@ -388,19 +388,6 @@ class ParticleFilter(InferenceModule):
         pacman_position = gameState.getPacmanPosition()
         jail_position = self.getJailPosition()
 
-        # prior = self.getBeliefDistribution()
-        # posterior = dict()
-
-        # print(f"{80*'*'}")
-        # print(pacman_position)
-        # print(jail_position)
-        # print(f"Prior:\n{prior}")
-        # print(f"Posterior:\n{posterior}")
-        # print(self.allPositions)
-        # print(len(self.particles))
-        # print(type(self.particles))
-        # print(f"{self.particles}")
-
         weights = dict()
         for particle in self.particles:
             # print(f"\t\t{80*'*'}")
@@ -418,17 +405,6 @@ class ParticleFilter(InferenceModule):
             weight_distro.normalize()
             resampled_particles = [weight_distro.sample() for _ in range(self.numParticles)]
             self.particles = resampled_particles
-
-        # for pos in self.allPositions:
-        #     likelihood = self.getObservationProb(observation, pacman_position, pos, jail_position)
-        #     posterior[pos] = likelihood * prior[pos]
-        # posterior_distro = DiscreteDistribution(posterior)
-        # if posterior_distro.total() == 0:
-        #     posterior_distro = self.initializeUniformly(gameState)
-        # posterior_distro.normalize()
-        #
-        # resampled_particles = posterior_distro.sample()
-        # self.particles = resampled_particles
 
     def elapseTime(self, gameState):
         """
