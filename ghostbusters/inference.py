@@ -361,7 +361,16 @@ class ParticleFilter(InferenceModule):
         """
         self.particles = []
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        legal_positions = self.legalPositions
+        particle_list = []
+        # The python docs are confusing, but choice should uniformly return elements of a sequence
+        # particle_list.extend(random.choices(legal_positions, k=self.numParticles))
+
+        samples_per_position = self.numParticles // len(legal_positions)
+        for pos in legal_positions:
+            particle_list.extend([pos] * samples_per_position)
+
+        self.particles = particle_list
 
     def observeUpdate(self, observation, gameState):
         """
@@ -376,7 +385,26 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        pacman_position = gameState.getPacmanPosition()
+        jail_position = self.getJailPosition()
+
+        weights = dict()
+        for particle in self.particles:
+            # print(f"\t\t{80*'*'}")
+            # print(f"{particle}")
+            particle_weight = self.getObservationProb(observation, pacman_position, particle, jail_position)
+            if particle not in weights:
+                weights[particle] = particle_weight
+            else:
+                weights[particle] += particle_weight
+
+        weight_distro = DiscreteDistribution(weights)
+        if (weight_distro.total()) == 0.0:
+            self.initializeUniformly(gameState)
+        else:
+            weight_distro.normalize()
+            resampled_particles = [weight_distro.sample() for _ in range(self.numParticles)]
+            self.particles = resampled_particles
 
     def elapseTime(self, gameState):
         """
@@ -384,7 +412,11 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        resampled_particles = []
+        for particle_pos in self.particles:
+            next_pos_distro = self.getPositionDistribution(gameState, particle_pos)
+            resampled_particles.append(next_pos_distro.sample())
+        self.particles = resampled_particles
 
     def getBeliefDistribution(self):
         """
@@ -395,8 +427,15 @@ class ParticleFilter(InferenceModule):
         This function should return a normalized distribution.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-
+        distribution_dict = dict()
+        for particle in self.particles:
+            if particle in distribution_dict:
+                distribution_dict[particle] += 1
+            else:
+                distribution_dict[particle] = 1
+        discrete_distribution = DiscreteDistribution(distribution_dict)
+        discrete_distribution.normalize()
+        return discrete_distribution
 
 class JointParticleFilter(ParticleFilter):
     """
